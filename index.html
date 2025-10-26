@@ -1,0 +1,331 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Smart Home Control</title>
+    
+    <style>
+        /* Basic page setup */
+        :root {
+            --page-bg: #f0f2f5;
+            --card-bg: #ffffff;
+            --text-primary: #1c1e21;
+            --text-secondary: #555;
+            --accent-on: #0866ff;
+            --accent-on-bg: #e7f3ff;
+            --accent-off: #d93025;
+            --accent-off-bg: #fdecec;
+            --shadow-color: rgba(0, 0, 0, 0.08);
+            --border-color: #ddd;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background-color: var(--page-bg);
+            color: var(--text-primary);
+            margin: 0;
+            padding: 20px;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Header with Title and Global Icons */
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+        }
+
+        header h1 {
+            margin: 0;
+            font-size: 1.8rem;
+        }
+
+        .global-controls button {
+            background: none;
+            border: none;
+            cursor: pointer;
+            font-size: 1.75rem; /* Makes icons large */
+            padding: 5px;
+            margin-left: 10px;
+            color: var(--text-secondary);
+        }
+
+        .global-controls button:hover {
+            color: var(--text-primary);
+        }
+
+        /* Main content area */
+        main {
+            flex-grow: 1; /* Ensures footer is pushed to the bottom */
+        }
+
+        /* Grid container for all device cards */
+        .device-grid {
+            display: grid;
+            /* This is the core of the responsiveness:
+               - 'auto-fit' fills the row with as many columns as possible
+               - 'minmax(220px, 1fr)' means each column is at least 220px wide
+                 and can grow to fill space (1fr)
+            */
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 20px; /* Space between cards */
+        }
+
+        /* Individual device card styling */
+        .device-card {
+            background-color: var(--card-bg);
+            border-radius: 12px;
+            box-shadow: 0 4px 12px var(--shadow-color);
+            padding: 20px;
+            text-align: center;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        .device-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 16px rgba(0, 0, 0, 0.12);
+        }
+
+        .device-card h3 {
+            margin-top: 0;
+            margin-bottom: 15px;
+            font-size: 1.1rem;
+            font-weight: 600;
+        }
+
+        /* Container for the On/Off buttons */
+        .controls {
+            display: flex;
+            justify-content: center;
+            gap: 10px; /* Space between buttons */
+        }
+
+        .controls button {
+            border: none;
+            border-radius: 8px;
+            padding: 10px 0;
+            flex-grow: 1; /* Makes buttons share the space */
+            font-size: 1rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: background-color 0.2s ease;
+        }
+
+        /* Specific button colors */
+        .on-btn {
+            background-color: var(--accent-on-bg);
+            color: var(--accent-on);
+        }
+        .on-btn:hover {
+            background-color: #d0e5ff;
+        }
+
+        .off-btn {
+            background-color: var(--accent-off-bg);
+            color: var(--accent-off);
+        }
+        .off-btn:hover {
+            background-color: #fbd6d4;
+        }
+
+        /* Special styling for RGB light color picker */
+        .color-picker {
+            width: 100%;
+            height: 35px;
+            margin-top: 15px;
+            border: none;
+            padding: 0;
+            cursor: pointer;
+            border-radius: 5px;
+            background-color: #f0f0f0;
+        }
+        
+        /* --- Footer --- */
+        footer {
+            text-align: center;
+            margin-top: 30px;
+            padding: 20px;
+            font-size: 0.9rem;
+            color: #888;
+            border-top: 1px solid var(--border-color);
+        }
+        
+        footer p {
+            margin: 0;
+        }
+
+        /* --- Mobile Responsiveness --- */
+        @media (max-width: 600px) {
+            body {
+                padding: 15px; /* Reduce padding on mobile */
+            }
+
+            header {
+                flex-direction: column; /* Stack title and icons */
+                align-items: flex-start; /* Align title to the left */
+                gap: 10px;
+                margin-bottom: 20px;
+            }
+
+            header h1 {
+                font-size: 1.6rem;
+            }
+
+            .global-controls {
+                align-self: flex-end; /* Keep icons to the right */
+                margin-top: -10px; /* Pull it up a bit */
+            }
+
+            /* Make cards slightly less wide on very small screens */
+            .device-grid {
+                grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            }
+        }
+        
+    </style>
+</head>
+<body>
+
+    <header>
+        <h1>My Home</h1>
+        <div class="global-controls">
+            <button id="settings-btn" title="Settings">⚙️</button>
+            <button id="add-btn" title="Add Device">➕</button>
+        </div>
+    </header>
+
+    <main>
+        <div class="device-grid">
+
+            <article class="device-card" data-device-id="fan-1">
+                <h3>🌀 Ceiling Fan 1</h3>
+                <div class="controls">
+                    <button class="on-btn">On</button>
+                    <button class="off-btn">Off</button>
+                </div>
+            </article>
+
+            <article class="device-card" data-device-id="fan-2">
+                <h3>🌀 Ceiling Fan 2</h3>
+                <div class="controls">
+                    <button class="on-btn">On</button>
+                    <button class="off-btn">Off</button>
+                </div>
+            </article>
+
+            <article class="device-card" data-device-id="led-1">
+                <h3>💡 Standard LED 1</h3>
+                <div class="controls">
+                    <button class="on-btn">On</button>
+                    <button class="off-btn">Off</button>
+                </div>
+            </article>
+
+            <article class="device-card" data-device-id="led-2">
+                <h3>💡 Standard LED 2</h3>
+                <div class="controls">
+                    <button class="on-btn">On</button>
+                    <button class="off-btn">Off</button>
+                </div>
+            </article>
+
+            <article class="device-card" data-device-id="rgb-1">
+                <h3>🎨 RGB Light 1</h3>
+                <div class="controls">
+                    <button class="on-btn">On</button>
+                    <button class="off-btn">Off</button>
+                </div>
+                <input type="color" class="color-picker" value="#ff80c0" title="Select color">
+            </article>
+
+            <article class="device-card" data-device-id="rgb-2">
+                <h3>🎨 RGB Light 2</h3>
+                <div class="controls">
+                    <button class="on-btn">On</button>
+                    <button class="off-btn">Off</button>
+                </div>
+                <input type="color" class="color-picker" value="#80ffdd" title="Select color">
+            </article>
+
+            <article class="device-card" data-device-id="fridge-1">
+                <h3>❄️ Refrigerator</h3>
+                <div class="controls">
+                    <button class="on-btn">On</button>
+                    <button class="off-btn">Off</button>
+                </div>
+            </article>
+
+            <article class="device-card" data-device-id="tv-1">
+                <h3>📺 TV</h3>
+                <div class="controls">
+                    <button class="on-btn">On</button>
+                    <button class="off-btn">Off</button>
+                </div>
+            </article>
+
+            <article class="device-card" data-device-id="exhaust-1">
+                <h3>💨 Exhaust Fan</h3>
+                <div class="controls">
+                    <button class="on-btn">On</button>
+                    <button class="off-btn">Off</button>
+                </div>
+            </article>
+
+        </div>
+    </main>
+    
+    <footer>
+        <p>created by sathasivam</p>
+    </footer>
+
+    <script>
+        // --- Add click listeners for global icons ---
+        document.getElementById('settings-btn').addEventListener('click', () => {
+            alert('Settings button clicked!');
+            // In a real app, you would open a settings modal here
+        });
+
+        document.getElementById('add-btn').addEventListener('click', () => {
+            alert('Add Device button clicked!');
+            // In a real app, you would show a form to add a new device
+        });
+
+        // --- Add click listeners for all device buttons ---
+        document.querySelector('.device-grid').addEventListener('click', (event) => {
+            
+            const clickedElement = event.target;
+            const deviceCard = clickedElement.closest('.device-card');
+            if (!deviceCard) return; 
+
+            const deviceName = deviceCard.querySelector('h3').innerText;
+
+            if (clickedElement.classList.contains('on-btn')) {
+                console.log(`Action: Turn ON - Device: ${deviceName}`);
+                // API request to turn ON goes here
+            }
+
+            if (clickedElement.classList.contains('off-btn')) {
+                console.log(`Action: Turn OFF - Device: ${deviceName}`);
+                // API request to turn OFF goes here
+            }
+        });
+
+        // --- Add listeners for color pickers ---
+        document.querySelectorAll('.color-picker').forEach(picker => {
+            picker.addEventListener('change', (event) => {
+                const deviceCard = event.target.closest('.device-card');
+                const deviceName = deviceCard.querySelector('h3').innerText;
+                const newColor = event.target.value;
+                
+                console.log(`Action: Set Color - Device: ${deviceName} - Color: ${newColor}`);
+                // API request to set color goes here
+            });
+        });
+    </script>
+
+</body>
+</html>
